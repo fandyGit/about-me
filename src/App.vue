@@ -68,7 +68,6 @@ const experiences = ref([
   <div :class="['app-root', theme]">
     <header class="global-navbar">
       <div class="navbar-left">
-        <router-link to="/" class="logo">我的主页</router-link>
         <nav class="navbar-menu">
           <router-link to="/">首页</router-link>
           <router-link to="/about">关于</router-link>
@@ -185,28 +184,6 @@ body,
   top: 0;
   z-index: 100;
   transition: all 0.3s ease;
-}
-.global-navbar:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--primary);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-.logo:hover {
-  color: var(--primary-hover);
-}
-.navbar-menu {
-  display: flex;
-  gap: 24px;
 }
 .navbar-menu a {
   color: var(--navbar-text);
