@@ -33,7 +33,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 8,
         "route_name": "Archives",
-        "bg_url": "http://img.mrzym.top/FlFlA2XjKkwPD4lRlFwxZc4mUsLt"
+        "bg_url": require('@/assets/img/bg/archive.png')
       },
       {
         "id": 9,
@@ -53,7 +53,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 13,
         "route_name": "Category",
-        "bg_url": "http://img.mrzym.top/Fjiasg7yStHBnRk2kjz1xknjF3iJ"
+        "bg_url": require('@/assets/img/bg/category.png')
       },
       {
         "id": 14,
@@ -63,7 +63,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 15,
         "route_name": "PhotoAlbum",
-        "bg_url": "http://img.mrzym.top/FhVJ8zBgi7pNy33yhQh9Lh05wOr5"
+        "bg_url": require('@/assets/img/bg/photoAlbum.png')
       },
       {
         "id": 16,
@@ -73,7 +73,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 17,
         "route_name": "Talk",
-        "bg_url": "http://img.mrzym.top/FjYSZMQauEspbLmbU33FZkQ_35Zp"
+        "bg_url": require('@/assets/img/bg/talk.png')
       },
       {
         "id": 21,
@@ -83,7 +83,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 22,
         "route_name": "resume",
-        "bg_url": "http://img.mrzym.top/FiCIpxwaz2M5GwNrq7U0r3OQ2eaT"
+        "bg_url": require('@/assets/img/bg/resume.png')
       },
       {
         "id": 25,
@@ -93,7 +93,7 @@ const getAllPageHeaderBg = async () => {
       {
         "id": 26,
         "route_name": "Home",
-        "bg_url": "http://img.mrzym.top/FjBqQgWdcox_N9RhZWHXTqll4Jy_"
+        "bg_url": require('@/assets/img/bg/home.png')
       },
       {
         "id": 27,
