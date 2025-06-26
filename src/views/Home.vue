@@ -36,8 +36,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Setting } from '@element-plus/icons-vue'
-
 const posts = ref([
   {
     id: 1,
