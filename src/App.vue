@@ -1,212 +1,193 @@
-<script setup lang="ts">
-import { ref, watchEffect, onMounted } from 'vue'
-import 'animate.css'
+<script setup>
+import { ref, onMounted, h, onBeforeUnmount } from "vue";
+import { isMobile, getWelcomeSay } from "@/utils/tool";
+import { addView, getAllPageHeader } from "@/api/config";
+import { useRoute, useRouter } from "vue-router";
+import { ElNotification } from "element-plus";
 
-const theme = ref('light')
+import { storeToRefs } from "pinia";
+import { user, staticData } from "@/store/index.js";
 
-// 读取本地存储的主题
-onMounted(() => {
-  const saved = localStorage.getItem('theme')
-  if (saved === 'dark' || saved === 'light') theme.value = saved
-})
+import MusicPlayer from "@/components/Music/index";
+import BackTop from "@/components/BackTop/index";
+import ChatRoom from "@/components/ChatRoom/index";
+import ContextMenu from "@/components/ContextMenu/index.vue";
 
-// 切换主题并保存
-function toggleTheme() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', theme.value)
-}
+const userStore = user();
+const router = useRouter();
+const route = useRoute();
+const { getUserInfo } = storeToRefs(userStore);
+const isPc = ref(true);
+const ContextMenuRef = ref(null);
 
-// 主题 class 应用到 body
-watchEffect(() => {
-  document.body.classList.toggle('dark-theme', theme.value === 'dark')
-  document.body.classList.toggle('light-theme', theme.value === 'light')
-})
+const goBack = () => {
+  router.go(-1);
+};
+
+// 获取所有的网站页面背景图
+const getAllPageHeaderBg = async () => {
+  const res = {
+    "code": 0,
+    "message": "获取所有背景成功",
+    "result": [
+      {
+        "id": 8,
+        "route_name": "Archives",
+        "bg_url": "http://img.mrzym.top/FlFlA2XjKkwPD4lRlFwxZc4mUsLt"
+      },
+      {
+        "id": 9,
+        "route_name": "Front",
+        "bg_url": "http://img.mrzym.top/FspmnaMX03SBQnSSOrc89AYU6WD6"
+      },
+      {
+        "id": 10,
+        "route_name": "Back",
+        "bg_url": "http://img.mrzym.top/Fuu4w1ZRXo4qteomv0iInTWaZJnV"
+      },
+      {
+        "id": 11,
+        "route_name": "SiteList",
+        "bg_url": "http://img.mrzym.top/Fk7tZJknslpjfuWYJ7t7WBRp1fko"
+      },
+      {
+        "id": 13,
+        "route_name": "Category",
+        "bg_url": "http://img.mrzym.top/Fjiasg7yStHBnRk2kjz1xknjF3iJ"
+      },
+      {
+        "id": 14,
+        "route_name": "Tag",
+        "bg_url": "http://img.mrzym.top/FglVTbjobxaerUyYjxcr8aSbe--G"
+      },
+      {
+        "id": 15,
+        "route_name": "PhotoAlbum",
+        "bg_url": "http://img.mrzym.top/FhVJ8zBgi7pNy33yhQh9Lh05wOr5"
+      },
+      {
+        "id": 16,
+        "route_name": "Photos",
+        "bg_url": "http://img.mrzym.top/Fj9jQJlzi5AjYhdTtdhbSF_5RPcZ"
+      },
+      {
+        "id": 17,
+        "route_name": "Talk",
+        "bg_url": "http://img.mrzym.top/FjYSZMQauEspbLmbU33FZkQ_35Zp"
+      },
+      {
+        "id": 21,
+        "route_name": "UserCenter",
+        "bg_url": "http://img.mrzym.top/FkmggZhOwM_6eq-_vX6P8iSiWctb"
+      },
+      {
+        "id": 22,
+        "route_name": "resume",
+        "bg_url": "http://img.mrzym.top/FiCIpxwaz2M5GwNrq7U0r3OQ2eaT"
+      },
+      {
+        "id": 25,
+        "route_name": "ArticleList",
+        "bg_url": "http://img.mrzym.top/FsNNILnTcg_VzzEXbZQl-qLnFNje"
+      },
+      {
+        "id": 26,
+        "route_name": "Home",
+        "bg_url": "http://img.mrzym.top/FjBqQgWdcox_N9RhZWHXTqll4Jy_"
+      },
+      {
+        "id": 27,
+        "route_name": "MessageList",
+        "bg_url": "http://img.mrzym.top/Fn7_qvNgz2DgtMUoQ325n8lZDfcI"
+      },
+      {
+        "id": 28,
+        "route_name": "PublishMessage",
+        "bg_url": "http://img.mrzym.top/FuAUQpSw6P99HzYyNwkR3zNFGFA3"
+      },
+      {
+        "id": 29,
+        "route_name": "MessageDetail",
+        "bg_url": "http://img.mrzym.top/FmfkN2rm6thxK9lHfTGyaYL_H3Qb"
+      }
+    ]
+  }
+  if (res.code == 0) {
+    staticData().setPageHeaderLIst(res.result);
+  } else {
+    ElNotification({
+      offset: 60,
+      title: "错误提示",
+      message: h("div", { style: "color: #f56c6c; font-weight: 600;" }, res.message),
+    });
+  }
+};
+
+const welcome = () => {
+  // 欢迎
+  let msg = getWelcomeSay(getUserInfo.value.nick_name);
+  if (getUserInfo.value.id == 3) {
+    msg = "小婷光临，真是三生有幸";
+  }
+  ElNotification({
+    offset: 60,
+    title: "欢迎～",
+    message: h("div", { style: "font-weight: 600;" }, msg),
+  });
+};
+
+const handleContextMenu = (e) => {
+  ContextMenuRef.value?.show(e);
+};
+
+const handleClick = () => {
+  ContextMenuRef.value?.hide();
+};
+
+onMounted(async () => {
+  isPc.value = !isMobile();
+
+  // 获取背景图片
+  getAllPageHeaderBg();
+  welcome();
+
+  document.addEventListener("contextmenu", handleContextMenu);
+  document.addEventListener("click", handleClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("contextmenu", handleContextMenu);
+  document.removeEventListener("click", handleClick);
+});
 </script>
 
 <template>
-  <div :class="['app-root', theme]">
-    <header class="global-navbar">
-      <div class="navbar-left">
-        <nav class="navbar-menu">
-          <router-link to="/">首页</router-link>
-          <router-link to="/about">关于</router-link>
-          <router-link to="/projects">项目</router-link>
-          <router-link to="/contact">联系</router-link>
-          <router-link to="/resume">简历</router-link>
-        </nav>
-      </div>
-      <div class="navbar-actions">
-        <button class="theme-toggle" @click="toggleTheme">
-          {{ theme === 'light' ? '🌙 暗黑' : '☀️ 明亮' }}
-        </button>
-      </div>
-    </header>
-    <transition name="fade" mode="out-in">
-      <router-view />
-    </transition>
+  <div class="app">
+    <router-view></router-view>
+    <BackTop v-if="route.path !== '/'" :right="isPc ? 3 : 0" />
+    <i
+      v-if="!isPc && ['home', '/'].includes(route.path)"
+      class="iconfont icon-fanhui"
+      @click="goBack"
+    ></i>
+    <MusicPlayer />
+<!--    <ChatRoom :isPc="isPc" v-if="route.path !== '/'" />-->
+    <ContextMenu ref="ContextMenuRef" />
   </div>
 </template>
 
-<style scoped>
-body,
-#app,
-.app-root {
-  background: var(--bg-color);
-  color: var(--text-color);
-  transition: background 0.2s, color 0.2s;
+<style lang="scss">
+.app {
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.global-navbar {
-  background: var(--navbar-bg);
-  color: var(--navbar-text);
+.icon-fanhui {
+  position: fixed;
+  left: 5px;
+  top: 60px;
+  font-size: 2.2rem;
+  color: var(--font-color);
+  z-index: 999;
 }
-
-.enhanced-nav router-link {
-  text-decoration: none;
-  color: #f7fff7;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 2rem;
-  transition: all 0.3s ease;
-}
-.enhanced-nav router-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
-}
-.enhanced-nav router-link.active {
-  background-color: #f7fff7;
-  color: #1a535c;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.app-root {
-  min-height: 100vh;
-  background: #fafafa;
-  color: #222;
-}
-.global-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  padding: 0 48px;
-  background: var(--navbar-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  transition: all 0.3s ease;
-}
-.navbar-menu a {
-  color: var(--navbar-text);
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 24px;
-  transition: all 0.3s ease;
-}
-.navbar-menu a:hover {
-  background: var(--navbar-hover-bg);
-  color: var(--primary);
-}
-.navbar-menu a.router-link-active {
-  background: var(--primary);
-  color: white;
-}
-.theme-toggle {
-  background: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  border-radius: 24px;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.theme-toggle:hover {
-  background: var(--button-hover-bg);
-  transform: translateY(-2px);
-}
-/* 定义主题变量 */
-:root {
-  --primary: #bfa76a;
-  --primary-hover: #a38f5a;
-  --navbar-bg: #ffffff;
-  --navbar-text: #333333;
-  --navbar-hover-bg: #f5f5f5;
-  --button-bg: #f5f5f5;
-  --button-text: #333333;
-  --button-hover-bg: #e0e0e0;
-}
-.navbar-menu {
-  display: flex;
-  gap: 24px;
-}
-.navbar-menu a {
-  color: #333;
-  text-decoration: none;
-  font-size: 16px;
-  transition: color 0.2s;
-}
-.navbar-menu a.router-link-active {
-  color: #bfa76a;
-}
-.navbar-actions {
-  display: flex;
-  align-items: center;
-}
-.theme-toggle {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 20px;
-  padding: 6px 18px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px #eee;
-  transition: background 0.2s;
-}
-.theme-toggle:hover {
-  background: #f5f5f5;
-}
-
-/* 暗黑主题样式 */
-.app-root.dark,
-body.dark-theme {
-  background: #23272e;
-  color: #eee;
-}
-.app-root.dark .global-navbar,
-body.dark-theme .global-navbar {
-  background: #2d323b;
-  border-bottom: 1px solid #444;
-}
-.app-root.dark .navbar-title,
-body.dark-theme .navbar-title {
-  color: #ffd700;
-}
-.app-root.dark .navbar-menu a,
-body.dark-theme .navbar-menu a {
-  color: #eee;
-}
-.app-root.dark .navbar-menu a.router-link-active,
-body.dark-theme .navbar-menu a.router-link-active {
-  color: #ffd700;
-}
-.app-root.dark .theme-toggle,
-body.dark-theme .theme-toggle {
-  background: #2d323b;
-  color: #ffd700;
-  border: 1px solid #444;
-}
-
-.skill-bar .progress {
-  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-
 </style>
